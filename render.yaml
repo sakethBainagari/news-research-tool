@@ -1,0 +1,26 @@
+services:
+  # API Backend Service
+  - type: web
+    name: news-research-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python api.py
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: OLLAMA_URL
+        sync: false  # This will prompt for manual entry during deployment
+    
+  # Frontend Static Site
+  - type: web
+    name: news-research-frontend
+    env: static
+    buildCommand: echo "No build needed for static site"
+    staticPublishPath: ./
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://news-research-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html 
