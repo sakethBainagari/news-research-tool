@@ -1,20 +1,27 @@
-# News Research Tool
+# News Research Tool 📈
 
-A tool for analyzing news content and extracting insights using Ollama LLMs.
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Flask](https://img.shields.io/badge/Flask-2.3.3-green.svg)
+![HTML/CSS/JS](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-orange)
 
-## Features
+A powerful tool for analyzing news content and extracting insights using Ollama LLMs. Ideal for researchers, journalists, and anyone who needs to process and analyze news content quickly and effectively.
 
-- URL content processing
-- PDF and text file analysis
-- Direct text input processing
-- Question answering on processed content
+## ✨ Features
 
-## Requirements
+- 🌐 URL content processing
+- 📄 PDF and text file analysis
+- ✍️ Direct text input processing
+- 🔍 Question answering on processed content
+- 🤖 Powered by local Ollama models
+- 🌙 Dark/light mode toggling
+
+## 🛠️ Requirements
 
 - Python 3.8+
 - Ollama running locally or on a server
 
-## Local Setup
+## 🚀 Local Setup
 
 1. Install dependencies:
    ```
@@ -33,7 +40,7 @@ A tool for analyzing news content and extracting insights using Ollama LLMs.
 
 4. Open `index.html` in a browser or serve with a static file server.
 
-## Deployment with Local Ollama
+## 🌍 Deployment with Local Ollama
 
 This setup allows you to deploy the frontend and backend to Render.com while keeping Ollama running on your local machine.
 
@@ -93,39 +100,16 @@ This setup allows you to deploy the frontend and backend to Render.com while kee
 - ngrok free tier: FREE (with limitations)
 - Your local computer running Ollama: Power/electricity costs only
 
-## Deployment Options
+## 📝 License
 
-### Render.com (Free Tier)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-1. Create a new Web Service pointing to your GitHub repo
-2. Use the following settings:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python api.py`
-   - Environment Variables: Add any necessary env vars
+## 🔗 Links
 
-3. For the static site (frontend):
-   - Create a new Static Site service
-   - Set the build directory to the root (where index.html is)
-   - Set the publish directory to the root
+- [GitHub Repository](https://github.com/sakethBainagari/news-research-tool)
+- [Developer Profile](https://github.com/sakethBainagari)
 
-### Fly.io (Free Tier)
+## 👨‍💻 Author
 
-1. Install the Fly CLI
-2. Create a `fly.toml` file:
-   ```
-   flyctl launch
-   ```
-3. Deploy:
-   ```
-   flyctl deploy
-   ```
-
-### Important Notes
-
-- The Ollama service needs to be running and accessible for the application to function
-- In a production environment, you may need to adjust the API_BASE_URL in app.js
-
-## License
-
-MIT
+Developed by [Saketh Bainagari](https://github.com/sakethBainagari)
 
