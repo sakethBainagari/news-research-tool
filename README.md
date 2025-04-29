@@ -42,7 +42,7 @@ A powerful tool for analyzing news content and extracting insights using Ollama 
 
 ## 🌍 Deployment with Local Ollama
 
-This setup allows you to deploy the frontend and backend to Render.com while keeping Ollama running on your local machine.
+This setup allows you to deploy the frontend to GitHub Pages and the backend to PythonAnywhere while keeping Ollama running on your local machine.
 
 ### Step 1: Make Your Ollama Accessible
 
@@ -52,51 +52,84 @@ This setup allows you to deploy the frontend and backend to Render.com while kee
    ```
 
 2. Set up port forwarding to make your local Ollama accessible from the internet:
-   - Option 1: Use a service like [ngrok](https://ngrok.com/) (free tier available):
+   - Use a service like [ngrok](https://ngrok.com/) (free tier available):
      ```
      ngrok http 11434
      ```
      This will give you a temporary URL like `https://abc123.ngrok.io`
 
-   - Option 2: Configure your router for port forwarding (more advanced)
+### Step 2: Deploy Frontend to GitHub Pages
 
-### Step 2: Deploy to Render.com
-
-1. Create a GitHub repository and push your code:
+1. Push your code to GitHub if you haven't already:
    ```
-   git init
    git add .
-   git commit -m "Initial commit"
-   git remote add origin YOUR_GITHUB_REPO_URL
-   git push -u origin main
+   git commit -m "Prepare for GitHub Pages deployment"
+   git push origin main
    ```
 
-2. Sign up for a free [Render.com](https://render.com/) account
+2. Create and push a gh-pages branch:
+   ```
+   git checkout -b gh-pages
+   git push origin gh-pages
+   ```
 
-3. Use the Render Dashboard's "Blueprint" feature to deploy from your GitHub repo:
-   - Click "New" > "Blueprint"
-   - Select your GitHub repository
-   - Render will detect the `render.yaml` file and set up both services
+3. Enable GitHub Pages in your repository settings:
+   - Go to your GitHub repository
+   - Click "Settings" > "Pages"
+   - Under "Source", select the "gh-pages" branch
+   - Click "Save"
+   - Your site will be available at `https://yourusername.github.io/news-research-tool/`
 
-4. When prompted for the `OLLAMA_URL` environment variable, enter your ngrok URL or public IP with port: 
-   ```
-   https://your-ngrok-url.ngrok.io
-   ```
-   or
-   ```
-   http://your-public-ip:11434
-   ```
+### Step 3: Deploy Backend to PythonAnywhere
+
+1. Sign up for a free account at [PythonAnywhere](https://www.pythonanywhere.com/)
+
+2. Create a new web app:
+   - Click "Web" > "Add a new web app"
+   - Choose "Flask" > "Python 3.8"
+   - Set your working directory to `/home/yourusername/news-research-tool`
+
+3. Upload your files:
+   - Go to "Files" and create a new directory for your project
+   - Upload your API files (api.py, requirements.txt)
+
+4. Set up your virtual environment:
+   - Open a Bash console in PythonAnywhere
+   - Create and activate a virtual environment:
+     ```
+     mkvirtualenv --python=/usr/bin/python3.8 myenv
+     pip install -r requirements.txt
+     ```
+
+5. Configure your web app:
+   - Go to the "Web" tab
+   - Under "Code" section, set:
+     - Working directory: `/home/yourusername/news-research-tool`
+     - WSGI configuration file: Click and edit to point to your Flask app
+   - Under "Environment variables", add:
+     ```
+     OLLAMA_URL=https://your-ngrok-url.ngrok.io
+     ```
+
+6. Update the frontend API URL:
+   - Edit app.js to point to your PythonAnywhere API:
+     ```js
+     const API_BASE_URL = window.location.hostname.includes('github.io')
+         ? 'https://yourusername.pythonanywhere.com/api'
+         : 'http://127.0.0.1:5000/api';
+     ```
 
 ### Important Notes
 
 - Your local computer must remain on with Ollama running for the application to work
-- Free Render services will "sleep" after 15 minutes of inactivity and take a few seconds to wake up
-- If your ngrok URL changes (free tier), you'll need to update the `OLLAMA_URL` in Render
+- The free tier of PythonAnywhere has some limitations but doesn't require a credit card
+- If your ngrok URL changes (free tier), you'll need to update the `OLLAMA_URL` in PythonAnywhere
+- GitHub Pages is completely free and doesn't require a credit card
 
 ### Cost Breakdown
 
-- Render.com static site: FREE
-- Render.com web service (backend): FREE (with limitations)
+- GitHub Pages: FREE
+- PythonAnywhere: FREE (basic tier)
 - ngrok free tier: FREE (with limitations)
 - Your local computer running Ollama: Power/electricity costs only
 

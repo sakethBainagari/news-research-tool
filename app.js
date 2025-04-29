@@ -63,10 +63,10 @@ const fileResult = document.getElementById('file-result');
 const fileAnswerText = document.getElementById('file-answer-text');
 const fileSourcesContainer = document.getElementById('file-sources-container');
 
-// Base API URL - change this to your Python backend server URL
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://127.0.0.1:5000/api'
-    : '/api';  // In production, the API is at the same origin or use full URL if needed
+// Base API URL - updated for GitHub Pages + PythonAnywhere deployment
+const API_BASE_URL = window.location.hostname.includes('github.io')
+    ? 'https://[YOUR_PYTHONANYWHERE_USERNAME].pythonanywhere.com/api'  // Replace with your PythonAnywhere username
+    : 'http://127.0.0.1:5000/api';  // Local development
 
 // Add debug logging to help track API calls
 function logApiCall(endpoint, method, data) {
