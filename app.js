@@ -65,7 +65,7 @@ const fileSourcesContainer = document.getElementById('file-sources-container');
 
 // Base API URL - updated for GitHub Pages + PythonAnywhere deployment
 const API_BASE_URL = window.location.hostname.includes('github.io')
-    ? 'https://[YOUR_PYTHONANYWHERE_USERNAME].pythonanywhere.com/api'  // Replace with your PythonAnywhere username
+    ? 'https://sakethbainagari.pythonanywhere.com/api'  // Replace with your PythonAnywhere username
     : 'http://127.0.0.1:5000/api';  // Local development
 
 // Add debug logging to help track API calls
