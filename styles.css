@@ -942,3 +942,50 @@ input:focus, textarea:focus, select:focus {
         opacity: 1;
     }
 }
+
+/* URL Control Buttons */
+.header-with-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.url-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.url-control-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.url-control-btn:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.url-control-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#url-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

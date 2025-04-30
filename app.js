@@ -11,6 +11,11 @@ const filePage = document.getElementById('file-page');
 const textPage = document.getElementById('text-page');
 const questionPage = document.getElementById('question-page');
 
+// URL control buttons
+const addUrlBtn = document.getElementById('add-url-btn');
+const removeUrlBtn = document.getElementById('remove-url-btn');
+const urlFieldsContainer = document.getElementById('url-fields-container');
+
 // Header elements
 const header = document.querySelector('header');
 const animationContainer = document.querySelector('.animation-container');
@@ -151,6 +156,32 @@ fileQuery.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') askFileQuestion();
 });
 
+// Event Listeners for URL field controls
+addUrlBtn.addEventListener('click', addUrlField);
+removeUrlBtn.addEventListener('click', removeUrlField);
+
+// URL field counter
+let urlFieldCount = 1;
+
+// Function to add a new URL field
+function addUrlField() {
+    urlFieldCount++;
+    const newField = document.createElement('input');
+    newField.type = 'text';
+    newField.id = `url${urlFieldCount}`;
+    newField.placeholder = `URL ${urlFieldCount}`;
+    newField.className = 'url-input';
+    urlFieldsContainer.appendChild(newField);
+}
+
+// Function to remove the last URL field
+function removeUrlField() {
+    if (urlFieldCount > 1) {
+        urlFieldsContainer.removeChild(urlFieldsContainer.lastChild);
+        urlFieldCount--;
+    }
+}
+
 // Listen for scroll events to animate content
 window.addEventListener('scroll', handleScroll);
 
@@ -274,12 +305,17 @@ function addButtonRippleEffect() {
 
 // Enhanced showPage function with animations that won't cause content to disappear
 function showPage(page, event) {
+    // Prevent default behavior if called from a click event
+    if (event) {
+        event.preventDefault();
+    }
+    
     // Hide all pages
     mainPage.style.display = 'none';
     urlPage.style.display = 'none';
     filePage.style.display = 'none';
     textPage.style.display = 'none';
-    questionPage.style.display = 'none';
+    if (questionPage) questionPage.style.display = 'none';
     
     // Add animation class to the page being shown but ensure content stays visible
     page.classList.add('animate-in');
@@ -291,8 +327,10 @@ function showPage(page, event) {
         document.querySelector('.card-container').style.display = 'flex';
         
         // If returning to main page, show title animation
-        titleAnimation.style.display = 'flex';
-        titleAnimation.style.opacity = '1'; // Ensure title is always visible
+        if (titleAnimation) {
+            titleAnimation.style.display = 'flex';
+            titleAnimation.style.opacity = '1'; // Ensure title is always visible
+        }
         
         // ONLY auto-scroll when explicitly clicking the back button
         const isBackButtonClick = event && event.target && event.target.classList.contains('back-btn');
@@ -307,7 +345,9 @@ function showPage(page, event) {
         page.style.display = 'block';
         
         // Hide title animation when not on main page
-        titleAnimation.style.display = 'none';
+        if (titleAnimation) {
+            titleAnimation.style.display = 'none';
+        }
         
         // Don't do any auto-scrolling when showing a specific page
     }
@@ -324,6 +364,16 @@ function showPage(page, event) {
         hideUrlResult();
         hideUrlError();
         urlQuery.value = '';
+        
+        // Reset URL fields to just one field
+        urlFieldsContainer.innerHTML = '';
+        const defaultField = document.createElement('input');
+        defaultField.type = 'text';
+        defaultField.id = 'url1';
+        defaultField.placeholder = 'URL 1';
+        defaultField.className = 'url-input';
+        urlFieldsContainer.appendChild(defaultField);
+        urlFieldCount = 1;
     } else if (page === filePage) {
         hideFileResult();
         hideFileError();
@@ -382,12 +432,11 @@ async function processData(type) {
     
     try {
         if (type === 'url') {
-            // Process URLs
-            const urls = [
-                document.getElementById('url1').value,
-                document.getElementById('url2').value,
-                document.getElementById('url3').value
-            ].filter(url => url.trim() !== '');
+            // Process URLs - collect all URL inputs
+            const urlInputs = Array.from(urlFieldsContainer.querySelectorAll('.url-input'));
+            const urls = urlInputs
+                .map(input => input.value)
+                .filter(url => url.trim() !== '');
             
             if (urls.length === 0) {
                 throw new Error('Please enter at least one URL.');
@@ -788,11 +837,11 @@ async function askUrlQuestion() {
     showUrlLoader();
     
     try {
-        const urls = [
-            document.getElementById('url1').value,
-            document.getElementById('url2').value,
-            document.getElementById('url3').value
-        ].filter(url => url.trim() !== '');
+        // Use the dynamic URL inputs instead of hardcoded elements
+        const urlInputs = Array.from(urlFieldsContainer.querySelectorAll('.url-input'));
+        const urls = urlInputs
+            .map(input => input.value)
+            .filter(url => url.trim() !== '');
         
         if (urls.length === 0) {
             throw new Error('Please enter at least one URL.');

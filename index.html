@@ -69,7 +69,7 @@
         
         <header>
             <div class="title-animation">
-                <h1 class="animated-title">NEWS RESEARCH TOOL 📈</h1>
+                <h1 class="animated-title">NEWS RESEARCH TOOL </h1>
                 <div class="animation-container">
                     <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" style="width: 100%; height: 400px;" loop autoplay></lottie-player>
                 </div>
@@ -85,10 +85,16 @@
             <div class="main-content">
                 <div class="sidebar">
                     <div id="url-inputs" class="input-section">
-                        <h3>Enter URLs</h3>
-                        <input type="text" id="url1" placeholder="URL 1" class="url-input">
-                        <input type="text" id="url2" placeholder="URL 2" class="url-input">
-                        <input type="text" id="url3" placeholder="URL 3" class="url-input">
+                        <div class="header-with-buttons">
+                            <h3>Enter URLs</h3>
+                            <div class="url-controls">
+                                <button id="add-url-btn" class="url-control-btn" aria-label="Add URL field">+</button>
+                                <button id="remove-url-btn" class="url-control-btn" aria-label="Remove URL field">-</button>
+                            </div>
+                        </div>
+                        <div id="url-fields-container">
+                            <input type="text" id="url1" placeholder="URL 1" class="url-input">
+                        </div>
                     </div>
 
                     <div class="model-select">
