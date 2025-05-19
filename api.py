@@ -27,8 +27,10 @@ logger.info(f"Using Ollama at: {OLLAMA_BASE_URL}")
 app = Blueprint('api', __name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes and origins
 
-# Vector store file path
-file_path = "vector_index.pkl"
+# Vector store file path - use temp directory for Render
+temp_dir = tempfile.gettempdir()
+file_path = os.path.join(temp_dir, "vector_index.pkl")
+logger.info(f"Vector store path: {file_path}")
 
 # Add alternative PDF processing methods
 def extract_text_from_pdf(pdf_path):
@@ -641,10 +643,27 @@ def query():
 
 @app.route('/api/status', methods=['GET'])
 def status():
-    if check_ollama_running():
-        return jsonify({"status": "running"}), 200
-    else:
-        return jsonify({"status": "not_running"}), 503
+    try:
+        # Check if we can create a temporary file
+        with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
+            temp_file.write('test')
+        
+        # Check if Ollama is accessible
+        ollama_status = "running" if check_ollama_running() else "not running"
+        
+        return jsonify({
+            "status": "ok",
+            "ollama_status": ollama_status,
+            "temp_dir_writable": True,
+            "api_version": "1.0"
+        }), 200
+    except Exception as e:
+        logger.error(f"Status check failed: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
