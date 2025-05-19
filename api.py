@@ -4,33 +4,52 @@ import os
 import pickle
 import requests
 from bs4 import BeautifulSoup
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-import tempfile
-from PyPDF2 import PdfReader
 import logging
 import traceback
 import sys
+import tempfile
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure minimal logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 # Configuration
 OLLAMA_BASE_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434')
 logger.info(f"Using Ollama at: {OLLAMA_BASE_URL}")
 
-# Change app to Blueprint
+# Initialize Blueprint with minimal settings
 app = Blueprint('api', __name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes and origins
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Vector store file path - use temp directory for Render
 temp_dir = tempfile.gettempdir()
 file_path = os.path.join(temp_dir, "vector_index.pkl")
 logger.info(f"Vector store path: {file_path}")
+
+# Lazy imports for heavy modules
+def get_text_splitter():
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    return RecursiveCharacterTextSplitter
+
+def get_document():
+    from langchain.schema import Document
+    return Document
+
+def get_vectorizer():
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    return TfidfVectorizer
+
+def get_cosine_similarity():
+    from sklearn.metrics.pairwise import cosine_similarity
+    return cosine_similarity
+
+def get_numpy():
+    import numpy as np
+    return np
 
 # Add alternative PDF processing methods
 def extract_text_from_pdf(pdf_path):
@@ -228,7 +247,7 @@ def process_urls():
             return jsonify({"error": "Could not access any of the provided URLs", "details": error_messages}), 400
         
         # Split into chunks
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splitter = get_text_splitter()(chunk_size=1000, chunk_overlap=200)
         docs = splitter.split_documents(raw_docs)
         
         # Extract text from documents
@@ -236,7 +255,7 @@ def process_urls():
         metadata = [doc.metadata for doc in docs]
         
         # Create TF-IDF model
-        vectorizer = TfidfVectorizer()
+        vectorizer = get_vectorizer()
         tfidf_matrix = vectorizer.fit_transform(texts)
         
         # Save the necessary data to disk
@@ -352,13 +371,13 @@ def process_file():
             
             # Create a basic TF-IDF model
             try:
-                vectorizer = TfidfVectorizer(min_df=1, stop_words=None)
+                vectorizer = get_vectorizer(min_df=1, stop_words=None)
                 tfidf_matrix = vectorizer.fit_transform(texts)
             except Exception as vec_err:
                 logger.warning(f"TF-IDF error: {str(vec_err)}")
                 # Emergency fallback with completely artificial content
                 texts = [f"Document {i+1} from {file.filename}" for i in range(3)]
-                vectorizer = TfidfVectorizer(min_df=1, stop_words=None)
+                vectorizer = get_vectorizer(min_df=1, stop_words=None)
                 tfidf_matrix = vectorizer.fit_transform(texts)
             
             # Save to disk
@@ -385,7 +404,7 @@ def process_file():
             emergency_texts = [f"File: {file.filename}", "Content could not be processed", "Please ask simple questions about the file"]
             
             # Create an emergency vectorizer and matrix
-            emergency_vectorizer = TfidfVectorizer(min_df=1, stop_words=None)
+            emergency_vectorizer = get_vectorizer(min_df=1, stop_words=None)
             emergency_matrix = emergency_vectorizer.fit_transform(emergency_texts)
             
             # Save emergency data
@@ -413,7 +432,7 @@ def process_file():
             # One final attempt - create dummy data that will never fail
             with open(file_path, "wb") as f:
                 dummy_texts = ["Document placeholder", f"Filename: {file.filename}", "Content unavailable"]
-                dummy_vectorizer = TfidfVectorizer()
+                dummy_vectorizer = get_vectorizer()
                 dummy_matrix = dummy_vectorizer.fit_transform(dummy_texts)
                 
                 pickle.dump({
@@ -463,7 +482,7 @@ def process_text():
         raw_docs = [Document(page_content=text, metadata={"source": "User input text"})]
         
         # Split into chunks
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splitter = get_text_splitter()(chunk_size=1000, chunk_overlap=200)
         docs = splitter.split_documents(raw_docs)
         
         # Extract text from documents
@@ -471,7 +490,7 @@ def process_text():
         metadata = [doc.metadata for doc in docs]
         
         # Create TF-IDF model
-        vectorizer = TfidfVectorizer()
+        vectorizer = get_vectorizer()
         tfidf_matrix = vectorizer.fit_transform(texts)
         
         # Save the necessary data to disk
@@ -539,7 +558,7 @@ def query():
             query_vector = vectorizer.transform([query_text])
             
             # Get similarity
-            similarity_scores = cosine_similarity(query_vector, tfidf_matrix)[0]
+            similarity_scores = get_cosine_similarity()(query_vector, tfidf_matrix)[0]
             
             # Get top indices
             top_indices = similarity_scores.argsort()[-3:][::-1]

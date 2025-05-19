@@ -4,12 +4,24 @@ from api import app as api_app
 import logging
 import os
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure minimal logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
-# Initialize Flask app
-app = Flask(__name__, static_folder='.', static_url_path='')
+# Initialize Flask app with minimal settings
+app = Flask(__name__, 
+    static_folder='.',
+    static_url_path='',
+    template_folder='.'
+)
+
+# Disable unnecessary features
+app.config['JSON_SORT_KEYS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # Mount the API routes under /api
 app.register_blueprint(api_app, url_prefix='/api')
@@ -17,17 +29,19 @@ app.register_blueprint(api_app, url_prefix='/api')
 # Basic error handler
 @app.errorhandler(Exception)
 def handle_error(error):
-    logger.error(f"Unhandled error: {str(error)}")
+    logger.error(f"Error: {str(error)}")
     return jsonify({
         "error": "Internal server error",
         "message": str(error)
     }), 500
 
-# Serve static files
+# Serve static files with caching
 @app.route('/')
 def serve_index():
     try:
-        return send_from_directory('.', 'index.html')
+        response = send_from_directory('.', 'index.html')
+        response.headers['Cache-Control'] = 'public, max-age=300'  # Cache for 5 minutes
+        return response
     except Exception as e:
         logger.error(f"Error serving index.html: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -35,12 +49,14 @@ def serve_index():
 @app.route('/<path:path>')
 def serve_static(path):
     try:
-        return send_from_directory('.', path)
+        response = send_from_directory('.', path)
+        response.headers['Cache-Control'] = 'public, max-age=300'  # Cache for 5 minutes
+        return response
     except Exception as e:
         logger.error(f"Error serving static file {path}: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-# Health check endpoint
+# Quick health check endpoint
 @app.route('/health')
 def health_check():
     return jsonify({"status": "healthy"}), 200
