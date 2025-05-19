@@ -1,20 +1,63 @@
 # News Research Tool 📈
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![Flask](https://img.shields.io/badge/Flask-2.3.3-green.svg)
-![HTML/CSS/JS](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-orange)
+A web application that helps analyze news articles, documents, and text using AI. Built with Flask and Ollama.
 
-A powerful tool for analyzing news content and extracting insights using Ollama LLMs. Ideal for researchers, journalists, and anyone who needs to process and analyze news content quickly and effectively.
+## Features
+- Process multiple URLs for research
+- Upload and analyze PDF/TXT files
+- Process text input
+- AI-powered question answering
+- Beautiful and responsive UI
 
-## ✨ Features
+## Setup Instructions
 
-- 🌐 URL content processing
-- 📄 PDF and text file analysis
-- ✍️ Direct text input processing
-- 🔍 Question answering on processed content
-- 🤖 Powered by local Ollama models
-- 🌙 Dark/light mode toggling
+### Local Ollama Setup
+1. Install Ollama from [ollama.ai](https://ollama.ai)
+2. Run Ollama locally:
+```bash
+ollama serve
+```
+
+### Ngrok Setup (for connecting deployed backend to local Ollama)
+1. Download ngrok from [ngrok.com](https://ngrok.com/download)
+2. Sign up for a free account at [ngrok.com](https://ngrok.com/signup)
+3. Configure ngrok with your authtoken:
+```bash
+ngrok config add-authtoken YOUR_AUTH_TOKEN
+```
+4. Start ngrok tunnel to Ollama:
+```bash
+ngrok http 11434
+```
+5. Copy the forwarding URL (e.g., https://something.ngrok-free.app)
+6. Add this URL as `OLLAMA_URL` environment variable in Render dashboard
+
+### Important Notes
+- Keep both Ollama and ngrok running while using the application
+- The ngrok URL changes each time you restart ngrok
+- Update the `OLLAMA_URL` in Render whenever the ngrok URL changes
+
+## Available Models
+- phi3:mini
+- gemma:2b
+- tinyllama:1.1b
+- llama3.2:1b
+- phi4-mini:latest
+- mistral:latest
+- llama2:latest
+
+## Usage
+1. Choose input type (URLs, File, or Text)
+2. Process your input
+3. Ask questions about the processed content
+4. Get AI-powered answers with source references
+
+## Tech Stack
+- Frontend: HTML, CSS, JavaScript
+- Backend: Flask (Python)
+- AI: Ollama
+- Deployment: Render
+- Tunneling: ngrok
 
 ## 🛠️ Requirements
 

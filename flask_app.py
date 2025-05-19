@@ -1,8 +1,10 @@
 # This file is needed for PythonAnywhere deployment
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, send_file
 from api import app as api_blueprint  # Rename for clarity
 import logging
 import os
+import mimetypes
+from flask_cors import CORS  # Add this import
 
 # Configure logging
 logging.basicConfig(
@@ -12,12 +14,26 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Add proper MIME types
+mimetypes.add_type('text/css', '.css')
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/html', '.html')
+
 # Initialize Flask app
 app = Flask(__name__, 
     static_folder='.',
     static_url_path='',
     template_folder='.'
 )
+
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Debug configuration
 app.config['DEBUG'] = True
@@ -46,12 +62,12 @@ def handle_error(error):
         "type": str(type(error).__name__)
     }), 500
 
-# Serve static files with caching
+# Serve static files with proper MIME types and caching
 @app.route('/')
 def serve_index():
     try:
         logger.info("Serving index.html")
-        response = send_from_directory('.', 'index.html')
+        response = send_file('index.html', mimetype='text/html')
         response.headers['Cache-Control'] = 'public, max-age=300'
         return response
     except Exception as e:
@@ -62,8 +78,16 @@ def serve_index():
 def serve_static(path):
     try:
         logger.info(f"Serving static file: {path}")
-        response = send_from_directory('.', path)
+        mime_type = mimetypes.guess_type(path)[0] or 'application/octet-stream'
+        response = send_file(path, mimetype=mime_type)
         response.headers['Cache-Control'] = 'public, max-age=300'
+        
+        # Add CORS headers for style and script files
+        if path.endswith(('.css', '.js')):
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        
         return response
     except Exception as e:
         logger.error(f"Error serving static file {path}: {str(e)}")
