@@ -66,7 +66,7 @@ const fileSourcesContainer = document.getElementById('file-sources-container');
 // API Configuration
 const API_BASE_URL = window.location.hostname.includes('localhost') 
     ? 'http://localhost:5000/api'
-    : 'https://b1ab-2401-4900-92da-5a2e-9c50-5ca8-a7c8-f8d1.ngrok-free.app';
+    : 'https://news-research-tool.onrender.com/api';
 
 // Add debug logging to help track API calls
 function logApiCall(endpoint, method, data) {
