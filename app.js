@@ -64,9 +64,7 @@ const fileAnswerText = document.getElementById('file-answer-text');
 const fileSourcesContainer = document.getElementById('file-sources-container');
 
 // API Configuration
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api'
-    : 'https://news-research-backend.onrender.com/api';
+const API_BASE_URL = '/api';
 
 // Add debug logging to help track API calls
 function logApiCall(endpoint, method, data) {

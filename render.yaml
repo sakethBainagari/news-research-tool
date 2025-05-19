@@ -1,14 +1,17 @@
 services:
   - type: web
-    name: news-research-backend
+    name: news-research-tool
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn flask_app:application
+    staticPublishPath: ./
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
       - key: OLLAMA_URL
         value: http://localhost:11434
+      - key: FLASK_ENV
+        value: production
 
   - type: static
     name: news-research-frontend

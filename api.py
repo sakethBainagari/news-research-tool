@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 import os
 import pickle
@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 OLLAMA_BASE_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434')
 logger.info(f"Using Ollama at: {OLLAMA_BASE_URL}")
 
-app = Flask(__name__)
+# Change app to Blueprint
+app = Blueprint('api', __name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes and origins
 
 # Vector store file path
