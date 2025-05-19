@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Configuration
-OLLAMA_BASE_URL = 'http://localhost:11434'  # Always use localhost
+OLLAMA_BASE_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434')
 logger.info(f"Using Ollama at: {OLLAMA_BASE_URL}")
 
 # Initialize Blueprint
