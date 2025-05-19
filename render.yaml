@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: news-research-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn flask_app:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: OLLAMA_URL
+        value: http://localhost:11434
+
+  - type: static
+    name: news-research-frontend
+    buildCommand: echo "Static site, no build needed"
+    staticPublishPath: ./
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache 

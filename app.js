@@ -63,10 +63,10 @@ const fileResult = document.getElementById('file-result');
 const fileAnswerText = document.getElementById('file-answer-text');
 const fileSourcesContainer = document.getElementById('file-sources-container');
 
-// Base API URL - updated for GitHub Pages + PythonAnywhere deployment
-const API_BASE_URL = window.location.hostname.includes('github.io')
-    ? 'https://[YOUR_PYTHONANYWHERE_USERNAME].pythonanywhere.com/api'  // Replace with your PythonAnywhere username
-    : 'http://127.0.0.1:5000/api';  // Local development
+// API Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000/api'
+    : 'https://news-research-backend.onrender.com/api';
 
 // Add debug logging to help track API calls
 function logApiCall(endpoint, method, data) {
