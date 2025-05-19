@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_cors import CORS
 import os
 import pickle
@@ -9,7 +9,7 @@ import traceback
 import sys
 import tempfile
 
-# Configure minimal logging
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -21,14 +21,52 @@ logger = logging.getLogger(__name__)
 OLLAMA_BASE_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434')
 logger.info(f"Using Ollama at: {OLLAMA_BASE_URL}")
 
-# Initialize Blueprint with minimal settings
+# Initialize Blueprint
 app = Blueprint('api', __name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app)
 
 # Vector store file path - use temp directory for Render
 temp_dir = tempfile.gettempdir()
 file_path = os.path.join(temp_dir, "vector_index.pkl")
 logger.info(f"Vector store path: {file_path}")
+
+# Debug route to list all endpoints
+@app.route('/routes')
+def list_routes():
+    routes = []
+    for rule in current_app.url_map.iter_rules():
+        if rule.endpoint.startswith('api.'):
+            routes.append({
+                'endpoint': rule.endpoint,
+                'methods': list(rule.methods),
+                'path': rule.rule
+            })
+    return jsonify(routes)
+
+@app.route('/status')
+def api_status():
+    try:
+        # Check if we can create a temporary file
+        with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
+            temp_file.write('test')
+        
+        # Check if Ollama is accessible
+        ollama_status = "running" if check_ollama_running() else "not running"
+        
+        return jsonify({
+            "status": "ok",
+            "ollama_status": ollama_status,
+            "temp_dir_writable": True,
+            "api_version": "1.0",
+            "base_url": OLLAMA_BASE_URL
+        }), 200
+    except Exception as e:
+        logger.error(f"Status check failed: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
 
 # Lazy imports for heavy modules
 def get_text_splitter():
@@ -659,30 +697,6 @@ def query():
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/status', methods=['GET'])
-def status():
-    try:
-        # Check if we can create a temporary file
-        with tempfile.NamedTemporaryFile(mode='w+') as temp_file:
-            temp_file.write('test')
-        
-        # Check if Ollama is accessible
-        ollama_status = "running" if check_ollama_running() else "not running"
-        
-        return jsonify({
-            "status": "ok",
-            "ollama_status": ollama_status,
-            "temp_dir_writable": True,
-            "api_version": "1.0"
-        }), 200
-    except Exception as e:
-        logger.error(f"Status check failed: {str(e)}")
-        return jsonify({
-            "status": "error",
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
